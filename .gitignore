@@ -1,0 +1,4 @@
+dist/
+build/
+ktamido.egg-info/
+.vscode/
