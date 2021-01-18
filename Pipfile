@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 lxml = "*"
 beautifulsoup4 = "*"
+pyyaml = "*"
 
 [dev-packages]
 autopep8 = "*"
@@ -15,7 +16,7 @@ flake8 = "*"
 python_version = "3.9"
 
 [scripts]
-scotch = "python main.py"
+crawl = "python main.py"
 test = "python -m unittest discover -v"
 format = "autopep8 -ivr ."
 lint = "flake8 --show-source ."
