@@ -1,3 +1,4 @@
+from typing import List, Tuple, Dict, Any
 from bs4 import BeautifulSoup
 import re
 #import sys
@@ -5,8 +6,15 @@ import re
 from scotch.doc_handler_base import DocHandlerBase
 
 class DocHandler(DocHandlerBase):
-  def __init__(self):
-    print("self")
+  def __init__(self, arguments: List[str], options: Dict[str, Any], config: Dict[str, Any]):
+    super().__init__(arguments, options, config)
+
+  def seeds(self) -> List[Tuple[str, int]]:
+    seeds = [
+      ("https://calorie.slism.jp/", 1),
+      ("https://www.asahi.com/news/", 1),
+    ]
+    return seeds
 
   def filter(self, seed_url: str, url: str) -> bool:
     if (url.find("/calorie.slism.jp/") >= 0):

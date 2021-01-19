@@ -35,8 +35,7 @@ class CrawlUrls:
     """
     cur = self.__conn.cursor()
     cur.execute(sql.format(self.__table))
-    cur.execute(
-      "CREATE INDEX status_index ON `{}`(status);".format(self.__table))
+    cur.execute("CREATE INDEX IF NOT EXISTS status_index ON `{}`(status);".format(self.__table))
     self.__conn.commit()
     cur.close()
 

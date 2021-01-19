@@ -1,2 +1,3 @@
-log_dir: "log" # ログ, dbファイルの出力先ディレクトリ
-sleep: 1 # クロールごとにsleepする秒数
+logfile: "log/crawl.log" # ログの出力先
+dbfile: "log/crawl.db" # url管理用DBファイルパス
+sleep: 0.1 # クロールごとにsleepする秒数
