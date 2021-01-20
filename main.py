@@ -10,6 +10,7 @@ from typing import Optional, List, Tuple, Dict, Any
 from collections import deque
 from urllib.request import urlopen, Request
 from urllib.parse import urljoin
+from urllib.error import HTTPError
 from bs4 import BeautifulSoup
 import yaml
 from scotch.crawl_urls import CrawlUrls
@@ -30,13 +31,21 @@ def crawl(table: CrawlUrls, handler: DocHandlerBase, config: Dict[str, Any]):
       doc = BeautifulSoup(response, "lxml")
       if (depth > 0):
         for link in doc.find_all("a"):
-          next_url = urljoin(url, link["href"])
-          if (handler.filter(url, next_url)):
-              table.add_new_url(next_url, depth - 1)
+          try:
+            next_url = urljoin(url, link.get("href", ""))
+            if (handler.filter(url, next_url)):
+                table.add_new_url(next_url, depth - 1)
+          except:
+            logging.warning("ネクストURL追加中にエラーが発生しました。(next_url=%s, depth=%s)", next_url, depth - 1)
+            logging.warning(traceback.format_exc())
       handler.handle(url, depth, doc)
       table.update_status_complete(url)
-    except:
-      logging.warning("error: url=%s, depth=%s", url, depth)
+    except HTTPError:
+      logging.warning("URLへのアクセスに失敗しました。(url=%s, depth=%s)", url, depth)
+      logging.warning(traceback.format_exc())
+      table.update_status_error(url)
+    except Exception:
+      logging.warning("クロール処理でエラーが発生しました。(url=%s, depth=%s)", url, depth)
       logging.warning(traceback.format_exc())
       table.update_status_error(url)
     row = table.get_new_url()
