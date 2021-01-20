@@ -59,7 +59,7 @@ class DocHandler(DocHandlerBase):
     Returns:
       void:
     """
-    if (not re.match("^https://calorie.slism.jp/[0-9]+/$", url)):
+    if (not re.match("^https?://calorie.slism.jp/[0-9]+/$", url)):
       return
     ret = []
     ret.append(self.select_one(doc, "h1"))
