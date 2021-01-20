@@ -7,6 +7,12 @@ from scotch.doc_handler_base import DocHandlerBase
 
 class DocHandler(DocHandlerBase):
   def __init__(self, arguments: List[str], options: Dict[str, Any], config: Dict[str, Any]):
+    """コンストラクタ。ヘッダなどを出力する場合はこのメソッドで。
+    Args:
+      arguments (List[str]): 引数の配列。["プロジェクト名"]
+      options (Dict[str, Any]): 辞書形式のオプション。{"continue": True, ...}
+      config (Dict[str, Any]): 辞書形式のconfig.yml。{"logfile": "path/to/log", ...}
+    """
     header = [
       "title"      , "energy"  , "protein",
       "protein_cal", "fat"     , "fat_cal",

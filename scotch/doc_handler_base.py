@@ -4,6 +4,12 @@ from bs4 import BeautifulSoup
 
 class DocHandlerBase:
   def __init__(self, arguments: List[str], options: Dict[str, Any], config: Dict[str, Any]):
+    """コンストラクタ。ヘッダなどを出力する場合はこのメソッドで。
+    Args:
+      arguments (List[str]): 引数の配列。["プロジェクト名"]
+      options (Dict[str, Any]): 辞書形式のオプション。{"continue": True, ...}
+      config (Dict[str, Any]): 辞書形式のconfig.yml。{"logfile": "path/to/log", ...}
+    """
     self.arguments = arguments
     self.options = options
     self.config = config
