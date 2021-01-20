@@ -17,18 +17,29 @@ class DocHandler(DocHandlerBase):
     super().__init__(arguments, options, config)
 
   def seeds(self) -> List[Tuple[str, int]]:
+    """クロール対象のシードURLとホップ数を返す
+    Returns:
+      List[Tuple[str, int]]: (シードURL, ホップ数)のリスト
+    """
     seeds = [
       ("https://calorie.slism.jp/", 10),
       #("https://www.asahi.com/news/", 1),
     ]
     return seeds
 
-  def filter(self, seed_url: str, url: str) -> bool:
-    if (url.find("/calorie.slism.jp/") >= 0):
-      if (url.find("#") >= 0):
+  def filter(self, curr_url: str, next_url: str) -> bool:
+    """ネクストURLをクロール対象とするかを判定する。
+    Args:
+      curr_url (str): 現在アクセスしているURL
+      next_url (str): ネクストURL。このURLをクロールするかを判定する。
+    Returns:
+      bool: True: next_urlをクロールする, False: next_urlをクロールしない
+    """
+    if (next_url.find("/calorie.slism.jp/") >= 0):
+      if (next_url.find("#") >= 0):
         return False
       return True
-    elif (url.find("/www.asahi.com/") >= 0):
+    elif (next_url.find("/www.asahi.com/") >= 0):
       return True
     else:
       return False
@@ -39,9 +50,15 @@ class DocHandler(DocHandlerBase):
       return ""
     return v.replace("\n", "").strip()
 
-    return "" if (v is None) else v
-
   def handle(self, url: str, depth: int, doc: BeautifulSoup):
+    """取得したdocumentを処理する
+    Args:
+      url (str): 取得したURL
+      depth (int): シードURLからの階層
+      doc (BeautifulSoup): ドキュメント
+    Returns:
+      void:
+    """
     if (not re.match("^https://calorie.slism.jp/[0-9]+/$", url)):
       return
     ret = []

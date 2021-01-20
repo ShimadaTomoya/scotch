@@ -44,7 +44,7 @@ def crawl(table: CrawlUrls, handler: DocHandlerBase, config: Dict[str, Any]):
       logging.warning("URLへのアクセスに失敗しました。(url=%s, depth=%s)", url, depth)
       logging.warning(traceback.format_exc())
       table.update_status_error(url)
-    except Exception:
+    except:
       logging.warning("クロール処理でエラーが発生しました。(url=%s, depth=%s)", url, depth)
       logging.warning(traceback.format_exc())
       table.update_status_error(url)
