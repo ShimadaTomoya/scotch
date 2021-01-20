@@ -53,6 +53,33 @@ def crawl(table: CrawlUrls, handler: DocHandlerBase, config: Dict[str, Any]):
 def script_dir():
   return os.path.abspath(os.path.dirname(__file__))
 
+def usage():
+  usage = """\
+scotch は webクロールフレームワークです。
+実行には pipenv が必要です。詳細な利用方法は README.md を参照ください。
+
+[usage]
+  pipenv run crawl <PROJECT> [options]
+
+[args]
+  <PROJECT>: プロジェクト名。
+    プロジェクトはルートディレクトリに作成します。
+    サンプルとして example プロジェクトを用意しています。 詳細は README.md を参照ください。
+
+[options]
+  -c | --continue: 中断したクロールを途中からスタートします。
+  -h | --help: ヘルプを表示します。
+
+[example]
+  - example プロジェクトを実行
+    pipenv run crawl example
+
+  - 実行中断したクロールを途中からスタート
+    pipenv run crawl example --continue
+"""
+  print(usage, file=sys.stderr)
+  sys.exit(1)
+
 def parse_args(args: List[str]) -> Tuple[List[str], Dict[str, str]]:
   options = {}
   arguments = []
@@ -61,22 +88,22 @@ def parse_args(args: List[str]) -> Tuple[List[str], Dict[str, str]]:
   while (len(queue) != 0):
     arg = queue.popleft()
     if (re.match("^(--*|-*)$", arg)):
-      raise Exception("不明なオプション: {}".format(arg))
+      print("不明なオプション: {}".format(arg), file=sys.stderr)
+      sys.exit(1)
     elif (re.match("^(--continue|-c)$", arg)):
       options["continue"] = True
     elif (re.match("^(--help|-h)$", arg)):
-      # TODO: usage
-      pass
+      usage()
     else:
       arguments.append(arg)
+  if (len(arguments) != 1):
+    print("不正な引数です。引数にはプロジェクトを指定してください。: {}".format(", ".join(arguments)), file=sys.stderr)
+    sys.exit(1)
   return (arguments, options)
 
 if __name__ == "__main__":
   # 引数
   arguments, options = parse_args(sys.argv)
-  if (len(arguments) != 1):
-    # TODO: usage
-    raise Exception("不正な引数です")
   project = arguments[0]
   conf_file = os.path.join(project, "config.yml")
 
@@ -88,13 +115,11 @@ if __name__ == "__main__":
   doc_handler_module = import_module("{}.doc_handler".format(project))
   doc_handler = doc_handler_module.DocHandler(arguments, options, config)
 
-  # log_dir
+  # logging
   log_file = config.get("logfile", "log/crawl.log")
   log_dir = os.path.basename(log_file)
   if (not os.path.exists(log_dir)):
     os.makedirs(log_dir)
-
-  # logger
   log_format = "%(asctime)s [%(levelname)s] [%(filename)s:%(lineno)d] %(message)s"
   logging.basicConfig(filename=log_file, format=log_format, level=logging.INFO)
 
