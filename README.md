@@ -11,13 +11,13 @@ pip install pipenv
 example プロジェクトを実行<br>
 ```bash
 cd scotch
-pipenv run crawl example > log/result.tsv
+pipenv run crawl example > result.tsv
 ```
 
 example プロジェクトを中断して再開<br>
 ```bash
 <ctrl + c>
-pipenv run crawl example --continue >> log/result.tsv
+pipenv run crawl example --continue >> result.tsv
 ```
 
 # ■ Create New Project
