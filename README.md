@@ -10,7 +10,9 @@ pip install pipenv
 
 example プロジェクトを実行<br>
 ```bash
+git clone https://github.com/ng3rdstmadgke/scotch.git
 cd scotch
+pipenv install
 pipenv run crawl example > result.tsv
 ```
 
