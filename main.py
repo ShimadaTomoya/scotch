@@ -117,7 +117,7 @@ if __name__ == "__main__":
 
   # logging
   log_file = config.get("logfile", "log/crawl.log")
-  log_dir = os.path.basename(log_file)
+  log_dir = os.path.dirname(log_file)
   if (not os.path.exists(log_dir)):
     os.makedirs(log_dir)
   log_format = "%(asctime)s [%(levelname)s] [%(filename)s:%(lineno)d] %(message)s"
