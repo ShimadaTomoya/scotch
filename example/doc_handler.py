@@ -14,9 +14,18 @@ class DocHandler(DocHandlerBase):
       config (Dict[str, Any]): 辞書形式のconfig.yml。{"logfile": "path/to/log", ...}
     """
     header = [
-      "title"      , "energy"  , "protein",
-      "protein_cal", "fat"     , "fat_cal",
-      "carb"       , "carb_cal", "desc",
+      "itemid",
+      "title",
+      "url",
+      "image",
+      "number1", # カロリー
+      "number2", # タンパク質(g)
+      "number3", # タンパク質(kcal)
+      "number4", # 脂質(g)
+      "number5", # 脂質(kcal)
+      "number6", # 炭水化物(g)
+      "number7", # 炭水化物(kcal)
+      "desc",
       ]
     if (not options.get("continue", False)):
       print("\t".join(header))
@@ -41,20 +50,26 @@ class DocHandler(DocHandlerBase):
     Returns:
       bool: True: next_urlをクロールする, False: next_urlをクロールしない
     """
-    if (next_url.find("/calorie.slism.jp/") >= 0):
-      if (next_url.find("#") >= 0):
+    if (next_url.find("https://calorie.slism.jp/") >= 0):
+      if (next_url.find("#") >= 0 or next_url.find("twitterOauth.php") >= 0):
         return False
       return True
-    elif (next_url.find("/www.asahi.com/") >= 0):
+    elif (next_url.find("https://www.asahi.com/") >= 0):
       return True
     else:
       return False
 
-  def select_one(self, doc: BeautifulSoup, selector: str) -> str:
-    v = doc.select_one(selector).text
+  def text_content(self, doc: BeautifulSoup, selector: str) -> str:
+    v = doc.select_one(selector)
     if (v is None):
       return ""
-    return v.replace("\n", "").strip()
+    return v.text.replace("\n", "").strip()
+
+  def get_attribute(self, doc: BeautifulSoup, selector: str, attribute: str) -> str:
+    v = doc.select_one(selector)
+    if (v is None):
+      return ""
+    return v.get(attribute)
 
   def handle(self, url: str, depth: int, doc: BeautifulSoup):
     """取得したdocumentを処理する
@@ -68,13 +83,28 @@ class DocHandler(DocHandlerBase):
     if (not re.match("^https?://calorie.slism.jp/[0-9]+/$", url)):
       return
     ret = []
-    ret.append(self.select_one(doc, "h1"))
-    ret.append(self.select_one(doc, "#mainData .label + td"))
-    ret.append(self.select_one(doc, "#protein_content"))
-    ret.append(self.select_one(doc, "#protein_calories"))
-    ret.append(self.select_one(doc, "#fat_content"))
-    ret.append(self.select_one(doc, "#fat_calories"))
-    ret.append(self.select_one(doc, "#carb_content"))
-    ret.append(self.select_one(doc, "#carb_calories"))
-    ret.append(self.select_one(doc, "#data > div:not(#main) .note02"))
+    # itemid
+    ret.append(url)
+    # title
+    ret.append(self.text_content(doc, "h1"))
+    # url
+    ret.append(url)
+    # image
+    ret.append(self.get_attribute(doc, "#itemImg img", "src"))
+    # number1
+    ret.append(self.text_content(doc, ".singlelistKcal"))
+    # number2
+    ret.append(self.text_content(doc, "#protein_content"))
+    # number3
+    ret.append(self.text_content(doc, "#protein_calories"))
+    # number4
+    ret.append(self.text_content(doc, "#fat_content"))
+    # number5
+    ret.append(self.text_content(doc, "#fat_calories"))
+    # number6
+    ret.append(self.text_content(doc, "#carb_content"))
+    # number7
+    ret.append(self.text_content(doc, "#carb_calories"))
+    # desc
+    ret.append(self.text_content(doc, ".note"))
     print("\t".join(ret))
